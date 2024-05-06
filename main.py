@@ -18,6 +18,7 @@ dp = Dispatcher()
 
 api = "http://localhost:8000"
 
+
 class ChineseMatchLookupState(StatesGroup):
     chinese_match = State()
     suggestion_details = State()
@@ -30,8 +31,10 @@ class ChineseMatch(BaseModel):
     russian: str
     level: Annotated[int, Field(alias="hsk_level")]
 
+
 class MatchChoiceCallback(CallbackData, prefix="match"):
     choice: int | None
+
 
 class SaveWordCallback(CallbackData, prefix="save"):
     word_to_save: int | None
@@ -46,27 +49,52 @@ async def start_handler(message: Message):
 
 
 @dp.callback_query(SaveWordCallback.filter(F.word_to_save != None))
-async def save_word_handler(query: CallbackQuery, callback_data: SaveWordCallback, bot: Bot):
+async def save_word_handler(
+    query: CallbackQuery, callback_data: SaveWordCallback, bot: Bot
+):
     async with aiohttp.ClientSession() as session:
-        async with session.post(f"{api}/new-word", data={"user_id": query.from_user.id, "word_id": callback_data.word_to_save}) as response:
+        async with session.post(
+            f"{api}/new-word",
+            data={"user_id": query.from_user.id, "word_id": callback_data.word_to_save},
+        ) as response:
             response_body = await response.json()
             if response_body["success"] == True:
-                await bot.edit_message_text(text="Сохранено в сет на изучение 🌱", chat_id=query.message.chat.id, message_id=query.message.message_id)
+                await bot.edit_message_text(
+                    text="Сохранено в сет на изучение 🌱",
+                    chat_id=query.message.chat.id,
+                    message_id=query.message.message_id,
+                )
+
 
 @dp.callback_query(MatchChoiceCallback.filter(F.choice != None))
-async def show_details_handler(query: CallbackQuery, callback_data: MatchChoiceCallback, bot: Bot):
+async def show_details_handler(
+    query: CallbackQuery, callback_data: MatchChoiceCallback, bot: Bot
+):
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"{api}/word-details/{callback_data.choice}") as response:
+        async with session.get(
+            f"{api}/word-details/{callback_data.choice}"
+        ) as response:
             response_body = await response.json()
             if response_body["success"] == True:
                 details: Dict = response_body["details"]
                 text = "\n".join([f"{key}: {value}" for key, value in details.items()])
                 keyboard_builder = InlineKeyboardBuilder()
-                keyboard_builder.button(text="Сохранить", callback_data=SaveWordCallback(word_to_save=callback_data.choice).pack())
-                keyboard_builder.button(text="Назад", callback_data=SaveWordCallback(word_to_save=None).pack())
-                await bot.edit_message_text(text=text, chat_id=query.message.chat.id, message_id=query.message.message_id, reply_markup=keyboard_builder.as_markup())
-
-
+                keyboard_builder.button(
+                    text="Сохранить",
+                    callback_data=SaveWordCallback(
+                        word_to_save=callback_data.choice
+                    ).pack(),
+                )
+                keyboard_builder.button(
+                    text="Назад",
+                    callback_data=SaveWordCallback(word_to_save=None).pack(),
+                )
+                await bot.edit_message_text(
+                    text=text,
+                    chat_id=query.message.chat.id,
+                    message_id=query.message.message_id,
+                    reply_markup=keyboard_builder.as_markup(),
+                )
 
 
 @dp.message(ChineseMatchLookupState.chinese_match)
@@ -79,9 +107,14 @@ async def search_match_handler(message: Message):
                 matches = chinese_match_result["match"]
                 keyboard_builder = InlineKeyboardBuilder()
                 for match in matches:
-                    keyboard_builder.button(text=match["russian"], callback_data=MatchChoiceCallback(choice=match["id"]).pack())
+                    keyboard_builder.button(
+                        text=match["russian"],
+                        callback_data=MatchChoiceCallback(choice=match["id"]).pack(),
+                    )
                 keyboard_builder.adjust(1, repeat=True)
-                await message.answer("Вот что удалось найти 🕵️", reply_markup=keyboard_builder.as_markup())
+                await message.answer(
+                    "Вот что удалось найти 🕵️", reply_markup=keyboard_builder.as_markup()
+                )
 
 
 # MARK: chinese match
@@ -94,6 +127,7 @@ async def chinese_match_command_handler(message: Message, state: FSMContext):
 
 
 # mark: main
+
 
 async def main():
     bot = Bot(
