@@ -10,6 +10,7 @@ import asyncio
 import logging
 import sys
 import random
+import os
 
 from pydantic import BaseModel, Field
 from typing import Annotated, Dict, List
@@ -94,8 +95,6 @@ async def find_saved_words(bot: Bot, user_id: int, chat_id: int, message_id: int
                         await bot.edit_message_text(text="Твои сохраненные слова для изучения 🌻", reply_markup=keyboard_builder.as_markup(), chat_id=chat_id, message_id=message_id)
                     else:
                         await bot.send_message(text="Твои сохраненные слова для изучения 🌻", reply_markup=keyboard_builder.as_markup(), chat_id=chat_id)
-
-
 
 
 # endpoint trigger, and below, what it would use (handler)
@@ -290,10 +289,7 @@ async def chinese_match_command_handler(message: Message, state: FSMContext):
 
 
 async def main():
-    bot = Bot(
-        token="7063305727:AAFmiV9XfZvD09GUeiX3EY4roTN37WJ_OsU",
-
-    )
+    bot = Bot(token=os.environ.get("TG_KEY"))
     await dp.start_polling(bot)
 
 
