@@ -1,10 +1,10 @@
-FROM python:3.13.0b1-slim-bookworm AS build-stage
+FROM python:3.13.0b1-bookworm AS build-stage
 
 WORKDIR /app
 
 COPY requirements.txt ./
 
-RUN pip install -r requirements.txt
+RUN pip install -r --no-cache-dir requirements.txt
 
 COPY . .
 
