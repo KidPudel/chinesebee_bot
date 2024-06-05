@@ -13,11 +13,11 @@ import random
 import os
 
 from pydantic import BaseModel, Field
-from typing import Annotated, Dict, List
+from typing import Annotated, Dict
 
 dp = Dispatcher()
 
-api = "http://localhost:8000"
+api = "https://chinesebeeapi-production.up.railway.app"
 
 
 class ChineseMatchLookupState(StatesGroup):
