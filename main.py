@@ -271,11 +271,6 @@ async def show_details_handler(
                 )
 
 
-@dp.message(ChineseMatchLookupState.chinese_match)
-async def search_match_handler(message: Message, bot: Bot):
-    await find_chinese_matches(word=message.text, bot=bot, chat_id=message.chat.id)
-
-
 # MARK: chinese match
 # we can allow to through put to the endpoint the data we want, like message, to then answer, or state to set it
 @dp.message(Command("chinese_match", prefix="/"))
@@ -283,6 +278,11 @@ async def chinese_match_command_handler(message: Message, state: FSMContext):
     print("test")
     await state.set_state(ChineseMatchLookupState.chinese_match)
     await message.answer("Введи слово, которое ты ищешь 🔎")
+
+@dp.message(ChineseMatchLookupState.chinese_match)
+async def search_match_handler(message: Message, bot: Bot):
+    await find_chinese_matches(word=message.text, bot=bot, chat_id=message.chat.id)
+
 
 
 # mark: main
