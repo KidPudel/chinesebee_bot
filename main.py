@@ -3,6 +3,7 @@ from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
+from aiogram.types.web_app_info import WebAppInfo
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.filters.callback_data import CallbackData
 import aiohttp
@@ -103,6 +104,15 @@ async def start_handler(message: Message):
     await message.answer(
         f"Привет, {message.from_user.first_name}! Как насчет улучшить свой китайский?\nДля начала, чтобы найти слова используй комманду /chinese_match\nЧтобы посмотреть свои сохраненные слова, просто используй /saved_words"
     )
+
+# MARK: dictation
+
+@dp.message(Command("dictation", prefix="/"))
+async def dictation_handler(message: Message):
+    web_app = WebAppInfo(url="https://t.me/chinesebee_bot/dictation")
+    keyboard = InlineKeyboardBuilder()
+    keyboard.button(text="Открыть прописи", web_app=web_app)
+    await message.answer(text="Начать практиковаться в правописании?", reply_markup=keyboard.as_markup())
     
 
 # MARK: flash cards
