@@ -106,7 +106,6 @@ async def start_handler(message: Message):
     )
 
 # MARK: dictation
-
 @dp.message(Command("dictation", prefix="/"))
 async def dictation_handler(message: Message):
     web_app = WebAppInfo(url=f"https://chinese-bee-dictation-production.up.railway.app/?user_id={message.from_user.id}")
@@ -116,7 +115,6 @@ async def dictation_handler(message: Message):
     
 
 # MARK: flash cards
-
 @dp.callback_query(FlashCardsCallback.filter(F.training == False))
 async def flash_cards_end_handler(query: CallbackQuery, callback_data: FlashCardsCallback, bot: Bot):
     await bot.edit_message_text(text="Спасибо, что уделил время на взращивание своих слов!", chat_id=query.message.chat.id, message_id=query.message.message_id)
