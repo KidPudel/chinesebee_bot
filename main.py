@@ -109,7 +109,7 @@ async def start_handler(message: Message):
 
 @dp.message(Command("dictation", prefix="/"))
 async def dictation_handler(message: Message):
-    web_app = WebAppInfo(url="https://t.me/chinesebee_bot/dictation")
+    web_app = WebAppInfo(url=f"https://chinese-bee-dictation-production.up.railway.app/?user_id={message.from_user.id}")
     keyboard = InlineKeyboardBuilder()
     keyboard.button(text="Открыть прописи", web_app=web_app)
     await message.answer(text="Начать практиковаться в правописании?", reply_markup=keyboard.as_markup())
